@@ -1,22 +1,21 @@
-<mat-sidenav-container>
-    <mat-sidenav #drawer mode="side" [opened]="showMenu">
-      <mat-nav-list>
-        <a mat-list-item routerLink="/dashboard">Dashboard</a>
-        <a mat-list-item routerLink="/config">Configuration</a>
-      </mat-nav-list>
-      
-    </mat-sidenav>
-  
-    <mat-sidenav-content>
-      <mat-toolbar color="primary">
-        <button mat-icon-button (click)="showMenu = !showMenu">
-          <mat-icon>menu</mat-icon>
-        </button>
-        <span>Panel Administrativo</span>
-      </mat-toolbar>
-      <div class="content">
-        <router-outlet></router-outlet>
-      </div>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
-  
+<mat-sidenav-container >
+  <mat-sidenav #drawer mode="side" [opened]="showMenu">
+    <mat-nav-list>
+      <a mat-list-item routerLink="/dashboard">Dashboard</a>
+      <a mat-list-item routerLink="/config">Configuration</a>
+      <a mat-list-item routerLink="/login">Log out</a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar class="custom-blue">
+      <button mat-icon-button (click)="showMenu = !showMenu">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span>Panel Administrativo</span>
+    </mat-toolbar>
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

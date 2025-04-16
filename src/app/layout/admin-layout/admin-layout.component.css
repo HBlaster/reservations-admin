@@ -2,3 +2,9 @@ mat-sidenav-container {
     height: 100%;
   }
   
+
+  .custom-blue {
+    background-color: #133677e0;
+    color: white;
+  }
+  
