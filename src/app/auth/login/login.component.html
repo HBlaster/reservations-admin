@@ -1,4 +1,4 @@
-<div class="login-wrapper">
+<!-- <div class="login-wrapper">
     <mat-card appearance="outlined">
       <mat-card-header>
         Administración de reservaciones
@@ -26,5 +26,44 @@
         </form>
       </mat-card-content>
     </mat-card>
+  </div>
+   -->
+
+   <div class="login-wrapper">
+    <div class="login-container">
+      <img src="assets/logo.png" alt="Logo del sistema" class="login-logo" />
+  
+      <mat-card appearance="outlined">
+        <mat-card-content>
+          <mat-card-title>Iniciar sesión</mat-card-title>
+          <p>Administración de reservaciones</p>
+  
+          <form [formGroup]="loginForm" (ngSubmit)="login()">
+            <mat-form-field appearance="fill">
+              <mat-label>Correo electrónico</mat-label>
+              <input matInput formControlName="email" type="email" required />
+              <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
+                El correo electrónico es requerido.
+              </mat-error>
+              <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
+                El correo electrónico no es válido.
+              </mat-error>
+            </mat-form-field>
+  
+            <mat-form-field appearance="fill">
+              <mat-label>Contraseña</mat-label>
+              <input matInput formControlName="password" type="password" required />
+              <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+                La contraseña es requerida.
+              </mat-error>
+            </mat-form-field>
+  
+            <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid">
+              Iniciar sesión
+            </button>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
   </div>
   

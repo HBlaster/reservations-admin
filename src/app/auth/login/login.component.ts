@@ -46,13 +46,6 @@ export class LoginComponent {
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
   }
-  // onSubmit() {
-  //   if (this.loginForm.valid) {
-  //     console.log(this.loginForm.value);
-  //   } else {
-  //     console.log('Form is invalid');
-  //   }
-  // }
 
   login() {
     const oUser = this.loginForm.value;
