@@ -7,18 +7,18 @@
 
         <form [formGroup]="capacityForm" (ngSubmit)="submit()">
           <mat-form-field appearance="fill">
-            <mat-label>Capacity</mat-label>
-            <input matInput formControlName="capacity" type="number" required />
-            <mat-error
-              *ngIf="capacityForm.get('capacity')?.hasError('required')"
-            >
-              The capacity is required.
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill">
             <mat-label>frecuency</mat-label>
-            <input matInput formControlName="frecuency" type="text" required />
+            <mat-select formControlName="frecuency" required>
+              <mat-option [value]="null" disabled
+                >Choose a frecuency</mat-option
+              >
+              <mat-option
+                *ngFor="let frecuency of frecuencyOptions"
+                [value]="frecuency.value"
+              >
+                {{ frecuency.viewValue }}
+              </mat-option>
+            </mat-select>
             <mat-error
               *ngIf="capacityForm.get('frecuency')?.hasError('required')"
             >
@@ -26,6 +26,46 @@
             </mat-error>
           </mat-form-field>
 
+          <div *ngIf="frecuencySignal() === 'daily'">
+            <mat-form-field appearance="fill">
+              <mat-label>Capacity</mat-label>
+              <input
+                matInput
+                formControlName="capacity"
+                type="number"
+                required
+              />
+              <mat-error
+                *ngIf="capacityForm.get('capacity')?.hasError('required')"
+              >
+                The capacity is required.
+              </mat-error>
+            </mat-form-field>
+            <div>
+              <label>Días de servicio</label>
+
+              <div *ngFor="let day of weekdays">
+                <mat-checkbox
+                  [checked]="isDaySelected(day.value)"
+                  (change)="toggleDay(day.value, $event.checked)"
+                >
+                  {{ day.label }}
+                </mat-checkbox>
+
+                <!-- Este bloque solo se renderiza si existe el FormControl -->
+                <ng-container *ngIf="getTimeControl(day.value) as timeControl">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Horario de {{ day.label }}</mat-label>
+                    <input
+                      matInput
+                      [formControl]="timeControl"
+                      placeholder="Ej. 09:00 - 18:00"
+                    />
+                  </mat-form-field>
+                </ng-container>
+              </div>
+            </div>
+          </div>
           <button
             mat-raised-button
             color="primary"
