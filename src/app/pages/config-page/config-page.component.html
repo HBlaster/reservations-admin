@@ -1,1 +1,41 @@
-<p>config-page works!</p>
+<div class="configuration-wrapper">
+  <div class="form-config-container">
+    <mat-card appearance="outlined">
+      <mat-card-content>
+        <mat-card-title>Configuration</mat-card-title>
+        <p>Administration of reservations</p>
+
+        <form [formGroup]="capacityForm" (ngSubmit)="submit()">
+          <mat-form-field appearance="fill">
+            <mat-label>Capacity</mat-label>
+            <input matInput formControlName="capacity" type="number" required />
+            <mat-error
+              *ngIf="capacityForm.get('capacity')?.hasError('required')"
+            >
+              The capacity is required.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>frecuency</mat-label>
+            <input matInput formControlName="frecuency" type="text" required />
+            <mat-error
+              *ngIf="capacityForm.get('frecuency')?.hasError('required')"
+            >
+              The frecuency is required.
+            </mat-error>
+          </mat-form-field>
+
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="capacityForm.invalid"
+          >
+            Submit
+          </button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
