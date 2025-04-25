@@ -51,18 +51,41 @@
                 >
                   {{ day.label }}
                 </mat-checkbox>
+                
+                
+                <div *ngIf="getTimesArray(day.value) as timeArray">
+                  <div *ngFor="let time of getTypedTimeArray(timeArray); let i = index">
+                    <mat-form-field appearance="fill">
+                      <mat-label>Horario {{ i + 1 }} de {{ day.label }}</mat-label>
+                      <input
+                        matInput
+                        [formControl]="time"
+                        placeholder="Ej. 09:00 - 12:00"
+                      />
+                      <button
+                        mat-icon-button
+                        color="warn"
+                        (click)="removeTimeSlot(day.value, i)"
+                        *ngIf="timeArray.length > 1"
+                      >
+                        <mat-icon>remove_circle</mat-icon>
+                      </button>
+                    </mat-form-field>
+                  </div>
+                
+                  <button
+                    mat-stroked-button
+                    color="accent"
+                    (click)="addTimeSlot(day.value)"
+                  >
+                    <mat-icon>add</mat-icon> Agregar horario
+                  </button>
+                </div>
+                
+                
 
-                <!-- Este bloque solo se renderiza si existe el FormControl -->
-                <ng-container *ngIf="getTimeControl(day.value) as timeControl">
-                  <mat-form-field appearance="fill">
-                    <mat-label>Horario de {{ day.label }}</mat-label>
-                    <input
-                      matInput
-                      [formControl]="timeControl"
-                      placeholder="Ej. 09:00 - 18:00"
-                    />
-                  </mat-form-field>
-                </ng-container>
+                
+                
               </div>
             </div>
           </div>

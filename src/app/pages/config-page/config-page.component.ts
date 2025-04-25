@@ -75,12 +75,29 @@ export class ConfigPageComponent {
     return this.capacityForm.get('serviceDays') as FormArray;
   }
 
+  // toggleDay(day: string, checked: boolean) {
+  //   if (checked) {
+  //     this.serviceDays.push(
+  //       this.fb.group({
+  //         day: [day],
+  //         time: [''], // Aquí podrías usar un array para múltiples horarios
+  //       })
+  //     );
+  //   } else {
+  //     const index = this.serviceDays.controls.findIndex(
+  //       (group) => group.get('day')?.value === day
+  //     );
+  //     if (index !== -1) {
+  //       this.serviceDays.removeAt(index);
+  //     }
+  //   }
+  // }
   toggleDay(day: string, checked: boolean) {
     if (checked) {
       this.serviceDays.push(
         this.fb.group({
           day: [day],
-          time: [''], // Aquí podrías usar un array para múltiples horarios
+          times: this.fb.array([this.fb.control('')])
         })
       );
     } else {
@@ -92,6 +109,33 @@ export class ConfigPageComponent {
       }
     }
   }
+
+  getDayGroup(day: string): FormGroup | null {
+    return this.serviceDays.controls.find(
+      (ctrl) => ctrl.get('day')?.value === day
+    ) as FormGroup;
+  }
+  
+  getTimesArray(day: string): FormArray | null {
+    const group = this.getDayGroup(day);
+    return group ? (group.get('times') as FormArray) : null;
+  }
+  
+  addTimeSlot(day: string) {
+    const times = this.getTimesArray(day);
+    if (times) {
+      times.push(this.fb.control(''));
+    }
+  }
+  
+  removeTimeSlot(day: string, index: number) {
+    const times = this.getTimesArray(day);
+    if (times) {
+      times.removeAt(index);
+    }
+  }
+  
+  
 
   isDaySelected(day: string): boolean {
     return this.serviceDays.controls.some(
@@ -105,6 +149,11 @@ export class ConfigPageComponent {
     ) as FormGroup;
     return group ? (group.get('time') as FormControl) : null;
   }
+
+  getTypedTimeArray(array: FormArray): FormControl[] {
+    return array.controls as FormControl[];
+  }
+  
 
   submit() {
     console.log(this.capacityForm.value);
