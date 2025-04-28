@@ -81,13 +81,30 @@
                     <mat-icon>add</mat-icon> Agregar horario
                   </button>
                 </div>
-                
-                
-
-                
-                
               </div>
             </div>
+            <div class="holidays-section" style="margin-top: 20px;">
+              <label>Días inactivos (feriados)</label>
+            
+              <div *ngFor="let holidayControl of getTypedHolidayArray(holidays); let i = index" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <mat-form-field appearance="fill">
+                  <mat-label>Seleccionar fecha</mat-label>
+                  <input matInput [matDatepicker]="picker" [formControl]="holidayControl">
+                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+              
+                <button mat-icon-button color="warn" (click)="removeHoliday(i)">
+                  <mat-icon>remove_circle</mat-icon>
+                </button>
+              </div>
+              
+            
+              <button mat-stroked-button color="accent" (click)="addHoliday()">
+                <mat-icon>add</mat-icon> Agregar fecha
+              </button>
+            </div>
+            
           </div>
           <button
             mat-raised-button

@@ -13,8 +13,10 @@ import { MatIconModule } from '@angular/material/icon'; // Si agregas íconos
 import { MatSelectModule } from '@angular/material/select';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl } from '@angular/forms';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+
 
 import {
   FormBuilder,
@@ -22,7 +24,6 @@ import {
   Validators,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-config-page',
@@ -38,6 +39,8 @@ import { Router } from '@angular/router';
     CommonModule,
     MatSelectModule,
     MatCheckboxModule,
+    MatDatepickerModule,
+  MatNativeDateModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './config-page.component.html',
@@ -59,6 +62,7 @@ export class ConfigPageComponent {
     capacity: [0, [Validators.required, Validators.min(1)]],
     frecuency: ['', [Validators.required]],
     serviceDays: this.fb.array([]),
+    holidays: this.fb.array([]),
   });
 
   frecuencySignal = toSignal(this.capacityForm.get('frecuency')!.valueChanges, {
@@ -75,23 +79,6 @@ export class ConfigPageComponent {
     return this.capacityForm.get('serviceDays') as FormArray;
   }
 
-  // toggleDay(day: string, checked: boolean) {
-  //   if (checked) {
-  //     this.serviceDays.push(
-  //       this.fb.group({
-  //         day: [day],
-  //         time: [''], // Aquí podrías usar un array para múltiples horarios
-  //       })
-  //     );
-  //   } else {
-  //     const index = this.serviceDays.controls.findIndex(
-  //       (group) => group.get('day')?.value === day
-  //     );
-  //     if (index !== -1) {
-  //       this.serviceDays.removeAt(index);
-  //     }
-  //   }
-  // }
   toggleDay(day: string, checked: boolean) {
     if (checked) {
       this.serviceDays.push(
@@ -153,6 +140,24 @@ export class ConfigPageComponent {
   getTypedTimeArray(array: FormArray): FormControl[] {
     return array.controls as FormControl[];
   }
+
+  get holidays(): FormArray {
+    return this.capacityForm.get('holidays') as FormArray;
+  }
+  
+  addHoliday() {
+    this.holidays.push(this.fb.control('', Validators.required));
+  }
+  
+  removeHoliday(index: number) {
+    this.holidays.removeAt(index);
+  }
+
+  getTypedHolidayArray(array: FormArray): FormControl[] {
+    return array.controls as FormControl[];
+  }
+  
+  
   
 
   submit() {
