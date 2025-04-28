@@ -16,6 +16,7 @@ import { FormArray, FormControl } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatDividerModule } from '@angular/material/divider';
 
 
 import {
@@ -41,6 +42,7 @@ import {
     MatCheckboxModule,
     MatDatepickerModule,
   MatNativeDateModule,
+    MatDividerModule
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './config-page.component.html',
@@ -146,7 +148,11 @@ export class ConfigPageComponent {
   }
   
   addHoliday() {
-    this.holidays.push(this.fb.control('', Validators.required));
+    this.holidays.push(this.fb.group({
+      date: [''],
+      startTime: [''], // opcionales
+      endTime: ['']
+    }));
   }
   
   removeHoliday(index: number) {
@@ -156,6 +162,11 @@ export class ConfigPageComponent {
   getTypedHolidayArray(array: FormArray): FormControl[] {
     return array.controls as FormControl[];
   }
+
+  getTypedHolidayGroupArray(array: FormArray): FormGroup[] {
+    return array.controls as FormGroup[];
+  }
+  
   
   
   
