@@ -76,6 +76,7 @@
                   <button
                     mat-stroked-button
                     color="accent"
+                    type="button"
                     (click)="addTimeSlot(day.value)"
                   >
                     <mat-icon>add</mat-icon> Agregar horario
@@ -83,7 +84,7 @@
                 </div>
               </div>
             </div>
-            <div class="holidays-section" style="margin-top: 20px;">
+            <!-- <div class="holidays-section" style="margin-top: 20px;">
               <label>Días inactivos (feriados)</label>
             
               <div *ngFor="let holidayGroup of getTypedHolidayGroupArray(holidays); let i = index" style="margin-bottom: 20px;">
@@ -96,7 +97,7 @@
                   </mat-form-field>
                   
             
-                  <button mat-icon-button color="warn" (click)="removeHoliday(i)">
+                  <button mat-icon-button color="warn" type="button" (click)="removeHoliday(i)">
                     <mat-icon>remove_circle</mat-icon>
                   </button>
                 </div>
@@ -116,10 +117,50 @@
                 <mat-divider style="margin: 20px 0;"></mat-divider>
               </div>
             
-              <button mat-stroked-button color="accent" (click)="addHoliday()">
+              <button mat-stroked-button color="accent" type="button" (click)="addHoliday()">
+                <mat-icon>add</mat-icon> Agregar fecha
+              </button>
+            </div> -->
+            
+            <div class="holidays-section" style="margin-top: 20px;">
+              <label>Días inactivos (feriados)</label>
+            
+              <div formArrayName="holidays">
+                <div *ngFor="let holidayGroup of getTypedHolidayGroupArray(holidays); let i = index" [formGroupName]="i" style="margin-bottom: 20px;">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <mat-form-field appearance="fill">
+                      <mat-label>Seleccionar fecha</mat-label>
+                      <input matInput [matDatepicker]="picker" formControlName="date">
+                      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                      <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+            
+                    <button mat-icon-button color="warn" type="button" (click)="removeHoliday(i)">
+                      <mat-icon>remove_circle</mat-icon>
+                    </button>
+                  </div>
+            
+                  <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <mat-form-field appearance="fill" style="flex: 1;">
+                      <mat-label>Hora de inicio (opcional)</mat-label>
+                      <input matInput type="time" formControlName="startTime">
+                    </mat-form-field>
+            
+                    <mat-form-field appearance="fill" style="flex: 1;">
+                      <mat-label>Hora de fin (opcional)</mat-label>
+                      <input matInput type="time" formControlName="endTime">
+                    </mat-form-field>
+                  </div>
+            
+                  <mat-divider style="margin: 20px 0;"></mat-divider>
+                </div>
+              </div>
+            
+              <button mat-stroked-button color="accent" type="button" (click)="addHoliday()">
                 <mat-icon>add</mat-icon> Agregar fecha
               </button>
             </div>
+            
             
             
           </div>
