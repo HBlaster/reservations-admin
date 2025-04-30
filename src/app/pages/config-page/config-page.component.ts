@@ -76,9 +76,20 @@ export class ConfigPageComponent {
   capacityForm = this.fb.group({
     capacity: [0, [Validators.required, Validators.min(1)]],
     frecuency: ['', [Validators.required]],
+    sameScheduleAllDays: [false],
     serviceDays: this.fb.array([]),
     holidays: this.fb.array([]),
   });
+
+  ngOnInit() {
+    this.capacityForm.get('sameScheduleAllDays')?.valueChanges.subscribe((value) => {
+      if (value) {
+        this.applySameScheduleToAll();
+      }
+    });
+  }
+  
+  
 
   frecuencySignal = toSignal(this.capacityForm.get('frecuency')!.valueChanges, {
     initialValue: '',
@@ -96,20 +107,35 @@ export class ConfigPageComponent {
 
   toggleDay(day: string, checked: boolean) {
     if (checked) {
-      this.serviceDays.push(
-        this.fb.group({
-          day: [day],
-          times: this.fb.array([
-            this.fb.group(
-              {
-                startTime: [''],
-                endTime: [''],
-              },
-              { validators: validateTimeRange }
-            ),
-          ]),
-        })
-      );
+      const dayGroup = this.fb.group({
+        day: [day],
+        times: this.fb.array([
+          this.fb.group(
+            {
+              startTime: [''],
+              endTime: [''],
+            },
+            { validators: validateTimeRange }
+          ),
+        ]),
+      });
+  
+      this.serviceDays.push(dayGroup);
+  
+      // 🚀 Si está activado el mismo horario, aplicar inmediatamente
+      const sameSchedule = this.capacityForm.get('sameScheduleAllDays')?.value;
+      if (sameSchedule && day !== 'MON') {
+        this.applySameScheduleToAll();  // <-- esta es la clave
+      }
+  
+      if (day === 'MON') {
+        const times = dayGroup.get('times') as FormArray;
+        times.valueChanges.subscribe(() => {
+          const sameSchedule = this.capacityForm.get('sameScheduleAllDays')?.value;
+          if (sameSchedule) this.applySameScheduleToAll();
+        });
+      }
+  
     } else {
       const index = this.serviceDays.controls.findIndex(
         (group) => group.get('day')?.value === day
@@ -119,6 +145,8 @@ export class ConfigPageComponent {
       }
     }
   }
+  
+  
 
   getTypedTimeGroupArray(array: FormArray): FormGroup[] {
     return array.controls as FormGroup[];
@@ -203,6 +231,39 @@ export class ConfigPageComponent {
   getTypedHolidayGroupArray(array: FormArray): FormGroup[] {
     return array.controls as FormGroup[];
   }
+
+  applySameScheduleToAll() {
+  const sameSchedule = this.capacityForm.get('sameScheduleAllDays')?.value;
+  const lunesGroup = this.getDayGroup('MON');
+  if (!sameSchedule || !lunesGroup) return;
+
+  const lunesTimes = this.getTimesArray('MON');
+  if (!lunesTimes || lunesTimes.length === 0) return;
+
+  const lunesValues = lunesTimes.controls.map(ctrl => ({
+    startTime: ctrl.get('startTime')?.value,
+    endTime: ctrl.get('endTime')?.value
+  }));
+
+  this.serviceDays.controls.forEach(dayGroup => {
+    const dayValue = dayGroup.get('day')?.value;
+    if (dayValue !== 'MON') {
+      const targetTimes = dayGroup.get('times') as FormArray;
+      targetTimes.clear(); // limpia antes de copiar
+
+      lunesValues.forEach(time =>
+        targetTimes.push(
+          this.fb.group({
+            startTime: [time.startTime],
+            endTime: [time.endTime]
+          }, { validators: validateTimeRange })
+        )
+      );
+    }
+  });
+}
+
+  
 
   submit() {
     console.log(this.capacityForm.value);

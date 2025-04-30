@@ -44,6 +44,13 @@
             <div>
               <label>Días de servicio</label>
 
+              <mat-checkbox
+                formControlName="sameScheduleAllDays"
+                (change)="applySameScheduleToAll()"
+              >
+                Usar el mismo horario para todos los días seleccionados
+              </mat-checkbox>
+
               <div *ngFor="let day of weekdays">
                 <mat-checkbox
                   [checked]="isDaySelected(day.value)"
@@ -51,32 +58,45 @@
                 >
                   {{ day.label }}
                 </mat-checkbox>
-                
-                
+
                 <div *ngIf="getTimesArray(day.value) as timeArray">
-                  <div *ngFor="let time of getTypedTimeGroupArray(timeArray); let i = index" [formGroup]="time">
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                      <mat-form-field appearance="fill" style="flex: 1;">
+                  <div
+                    *ngFor="
+                      let time of getTypedTimeGroupArray(timeArray);
+                      let i = index
+                    "
+                    [formGroup]="time"
+                  >
+                    <div style="display: flex; gap: 10px; align-items: center">
+                      <mat-form-field appearance="fill" style="flex: 1">
                         <mat-label>Hora de inicio</mat-label>
-                        <input matInput type="time" formControlName="startTime" />
+                        <input
+                          matInput
+                          type="time"
+                          formControlName="startTime"
+                        />
                       </mat-form-field>
-                  
-                      <mat-form-field appearance="fill" style="flex: 1;">
+
+                      <mat-form-field appearance="fill" style="flex: 1">
                         <mat-label>Hora de fin</mat-label>
                         <input matInput type="time" formControlName="endTime" />
                       </mat-form-field>
-                  
-                      <button mat-icon-button color="warn" type="button" (click)="removeTimeSlot(day.value, i)">
+
+                      <button
+                        mat-icon-button
+                        color="warn"
+                        type="button"
+                        (click)="removeTimeSlot(day.value, i)"
+                      >
                         <mat-icon>remove_circle</mat-icon>
                       </button>
                     </div>
-                  
+
                     <mat-error *ngIf="time.errors?.['invalidTimeRange']">
                       La hora de inicio debe ser menor a la hora de fin.
                     </mat-error>
                   </div>
-                  
-                
+
                   <button
                     mat-stroked-button
                     color="accent"
@@ -88,51 +108,72 @@
                 </div>
               </div>
             </div>
-            <div class="holidays-section" style="margin-top: 20px;">
+            <div class="holidays-section" style="margin-top: 20px">
               <label>Días inactivos (feriados)</label>
-            
+
               <div formArrayName="holidays">
-                <div *ngFor="let holidayGroup of getTypedHolidayGroupArray(holidays); let i = index" [formGroupName]="i" style="margin-bottom: 20px;">
-                  <div style="display: flex; align-items: center; gap: 10px;">
+                <div
+                  *ngFor="
+                    let holidayGroup of getTypedHolidayGroupArray(holidays);
+                    let i = index
+                  "
+                  [formGroupName]="i"
+                  style="margin-bottom: 20px"
+                >
+                  <div style="display: flex; align-items: center; gap: 10px">
                     <mat-form-field appearance="fill">
                       <mat-label>Seleccionar fecha</mat-label>
-                      <input matInput [matDatepicker]="picker" formControlName="date">
-                      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                      <input
+                        matInput
+                        [matDatepicker]="picker"
+                        formControlName="date"
+                      />
+                      <mat-datepicker-toggle
+                        matSuffix
+                        [for]="picker"
+                      ></mat-datepicker-toggle>
                       <mat-datepicker #picker></mat-datepicker>
                     </mat-form-field>
-            
-                    <button mat-icon-button color="warn" type="button" (click)="removeHoliday(i)">
+
+                    <button
+                      mat-icon-button
+                      color="warn"
+                      type="button"
+                      (click)="removeHoliday(i)"
+                    >
                       <mat-icon>remove_circle</mat-icon>
                     </button>
                   </div>
-            
-                  <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <mat-form-field appearance="fill" style="flex: 1;">
+
+                  <div style="display: flex; gap: 10px; margin-top: 10px">
+                    <mat-form-field appearance="fill" style="flex: 1">
                       <mat-label>Hora de inicio (opcional)</mat-label>
-                      <input matInput type="time" formControlName="startTime">
+                      <input matInput type="time" formControlName="startTime" />
                     </mat-form-field>
-            
-                    <mat-form-field appearance="fill" style="flex: 1;">
+
+                    <mat-form-field appearance="fill" style="flex: 1">
                       <mat-label>Hora de fin (opcional)</mat-label>
-                      <input matInput type="time" formControlName="endTime">
+                      <input matInput type="time" formControlName="endTime" />
                     </mat-form-field>
                   </div>
 
                   <mat-error *ngIf="holidayGroup.errors?.['invalidTimeRange']">
                     La hora de inicio debe ser menor que la hora de fin.
                   </mat-error>
-            
-                  <mat-divider style="margin: 20px 0;"></mat-divider>
+
+                  <mat-divider style="margin: 20px 0"></mat-divider>
                 </div>
               </div>
-            
-              <button mat-stroked-button color="accent" type="button" (click)="addHoliday()">
+
+              <button
+                mat-stroked-button
+                color="accent"
+                type="button"
+                (click)="addHoliday()"
+              >
                 <mat-icon>add</mat-icon> Agregar fecha
               </button>
             </div>
-            
-            
-            
           </div>
           <button
             mat-raised-button
