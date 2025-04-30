@@ -12,12 +12,16 @@ import { MatButtonModule } from '@angular/material/button'; // Si usas botones d
 import { MatIconModule } from '@angular/material/icon'; // Si agregas íconos
 import { MatSelectModule } from '@angular/material/select';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { FormArray, FormControl } from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormControl,
+  ValidationErrors,
+} from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDividerModule } from '@angular/material/divider';
-
 
 import {
   FormBuilder,
@@ -25,6 +29,15 @@ import {
   Validators,
   ReactiveFormsModule,
 } from '@angular/forms';
+
+function validateTimeRange(group: AbstractControl): ValidationErrors | null {
+  const start = group.get('startTime')?.value;
+  const end = group.get('endTime')?.value;
+
+  if (!start || !end) return null; // si alguno está vacío, está ok
+
+  return start < end ? null : { invalidTimeRange: true };
+}
 
 @Component({
   selector: 'app-config-page',
@@ -41,8 +54,8 @@ import {
     MatSelectModule,
     MatCheckboxModule,
     MatDatepickerModule,
-  MatNativeDateModule,
-    MatDividerModule
+    MatNativeDateModule,
+    MatDividerModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './config-page.component.html',
@@ -86,7 +99,15 @@ export class ConfigPageComponent {
       this.serviceDays.push(
         this.fb.group({
           day: [day],
-          times: this.fb.array([this.fb.control('')])
+          times: this.fb.array([
+            this.fb.group(
+              {
+                startTime: [''],
+                endTime: [''],
+              },
+              { validators: validateTimeRange }
+            ),
+          ]),
         })
       );
     } else {
@@ -99,32 +120,43 @@ export class ConfigPageComponent {
     }
   }
 
+  getTypedTimeGroupArray(array: FormArray): FormGroup[] {
+    return array.controls as FormGroup[];
+  }
+  
+
   getDayGroup(day: string): FormGroup | null {
     return this.serviceDays.controls.find(
       (ctrl) => ctrl.get('day')?.value === day
     ) as FormGroup;
   }
-  
+
   getTimesArray(day: string): FormArray | null {
     const group = this.getDayGroup(day);
     return group ? (group.get('times') as FormArray) : null;
   }
-  
+
   addTimeSlot(day: string) {
     const times = this.getTimesArray(day);
     if (times) {
-      times.push(this.fb.control(''));
+      times.push(
+        this.fb.group(
+          {
+            startTime: [''],
+            endTime: [''],
+          },
+          { validators: validateTimeRange }
+        )
+      );
     }
   }
-  
+
   removeTimeSlot(day: string, index: number) {
     const times = this.getTimesArray(day);
     if (times) {
       times.removeAt(index);
     }
   }
-  
-  
 
   isDaySelected(day: string): boolean {
     return this.serviceDays.controls.some(
@@ -146,15 +178,20 @@ export class ConfigPageComponent {
   get holidays(): FormArray {
     return this.capacityForm.get('holidays') as FormArray;
   }
-  
+
   addHoliday() {
-    this.holidays.push(this.fb.group({
-      date: [''],
-      startTime: [''], // opcionales
-      endTime: ['']
-    }));
+    this.holidays.push(
+      this.fb.group(
+        {
+          date: [''],
+          startTime: [''],
+          endTime: [''],
+        },
+        { validators: validateTimeRange }
+      )
+    );
   }
-  
+
   removeHoliday(index: number) {
     this.holidays.removeAt(index);
   }
@@ -166,10 +203,6 @@ export class ConfigPageComponent {
   getTypedHolidayGroupArray(array: FormArray): FormGroup[] {
     return array.controls as FormGroup[];
   }
-  
-  
-  
-  
 
   submit() {
     console.log(this.capacityForm.value);
