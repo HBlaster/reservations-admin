@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  Signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -13,32 +8,18 @@ import { MatIconModule } from '@angular/material/icon'; // Si agregas íconos
 import { MatSelectModule } from '@angular/material/select';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
-  AbstractControl,
   FormArray,
   FormControl,
-  ValidationErrors,
 } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDividerModule } from '@angular/material/divider';
-
+import { ReservationFormService } from '../../services/reservation-form.service.ts.service';
 import {
-  FormBuilder,
   FormGroup,
-  Validators,
   ReactiveFormsModule,
 } from '@angular/forms';
-
-function validateTimeRange(group: AbstractControl): ValidationErrors | null {
-  const start = group.get('startTime')?.value;
-  const end = group.get('endTime')?.value;
-
-  if (!start || !end) return null; // si alguno está vacío, está ok
-
-  return start < end ? null : { invalidTimeRange: true };
-}
-
 @Component({
   selector: 'app-config-page',
   standalone: true,
@@ -62,43 +43,36 @@ function validateTimeRange(group: AbstractControl): ValidationErrors | null {
   styleUrl: './config-page.component.css',
 })
 export class ConfigPageComponent {
-  private fb = inject(FormBuilder);
   weekdays = [
-    { label: 'Lunes', value: 'MON' },
-    { label: 'Martes', value: 'TUE' },
-    { label: 'Miércoles', value: 'WED' },
-    { label: 'Jueves', value: 'THU' },
-    { label: 'Viernes', value: 'FRI' },
-    { label: 'Sábado', value: 'SAT' },
-    { label: 'Domingo', value: 'SUN' },
+    { label: 'Monday', value: 'MON' },
+    { label: 'Tuesday', value: 'TUE' },
+    { label: 'Wednesday', value: 'WED' },
+    { label: 'Thursday', value: 'THU' },
+    { label: 'Friday', value: 'FRI' },
+    { label: 'Saturday', value: 'SAT' },
+    { label: 'Sunday', value: 'SUN' },
   ];
 
-  capacityForm = this.fb.group({
-    capacity: [0, [Validators.required, Validators.min(1)]],
-    frecuency: ['', [Validators.required]],
-    sameScheduleAllDays: [false],
-    serviceDays: this.fb.array([]),
-    holidays: this.fb.array([]),
-  });
+  formService = inject(ReservationFormService);
+  capacityForm = this.formService.createConfigForm();
 
   ngOnInit() {
-    this.capacityForm.get('sameScheduleAllDays')?.valueChanges.subscribe((value) => {
-      if (value) {
-        this.applySameScheduleToAll();
-      }
-    });
+    this.capacityForm
+      .get('sameScheduleAllDays')
+      ?.valueChanges.subscribe((value) => {
+        if (value) {
+          this.applySameScheduleToAll();
+        }
+      });
   }
-  
-  
 
   frecuencySignal = toSignal(this.capacityForm.get('frecuency')!.valueChanges, {
     initialValue: '',
   });
 
   frecuencyOptions = [
-    { value: 'daily', viewValue: 'Diario' },
-    { value: 'hour', viewValue: 'hora' },
-    { value: 'minute', viewValue: 'minutos' },
+    { value: 'daily', viewValue: 'Daily' },
+    { value: 'interval', viewValue: 'Interval' },
   ];
 
   get serviceDays(): FormArray {
@@ -107,35 +81,24 @@ export class ConfigPageComponent {
 
   toggleDay(day: string, checked: boolean) {
     if (checked) {
-      const dayGroup = this.fb.group({
-        day: [day],
-        times: this.fb.array([
-          this.fb.group(
-            {
-              startTime: [''],
-              endTime: [''],
-            },
-            { validators: validateTimeRange }
-          ),
-        ]),
-      });
-  
+      const dayGroup = this.formService.createServiceDay(day);
       this.serviceDays.push(dayGroup);
-  
-      // 🚀 Si está activado el mismo horario, aplicar inmediatamente
+
+      // 🚀 If same schedule is active, apply it immediately
       const sameSchedule = this.capacityForm.get('sameScheduleAllDays')?.value;
       if (sameSchedule && day !== 'MON') {
-        this.applySameScheduleToAll();  // <-- esta es la clave
+        this.applySameScheduleToAll();
       }
-  
+
       if (day === 'MON') {
         const times = dayGroup.get('times') as FormArray;
         times.valueChanges.subscribe(() => {
-          const sameSchedule = this.capacityForm.get('sameScheduleAllDays')?.value;
+          const sameSchedule = this.capacityForm.get(
+            'sameScheduleAllDays'
+          )?.value;
           if (sameSchedule) this.applySameScheduleToAll();
         });
       }
-  
     } else {
       const index = this.serviceDays.controls.findIndex(
         (group) => group.get('day')?.value === day
@@ -145,13 +108,10 @@ export class ConfigPageComponent {
       }
     }
   }
-  
-  
 
   getTypedTimeGroupArray(array: FormArray): FormGroup[] {
     return array.controls as FormGroup[];
   }
-  
 
   getDayGroup(day: string): FormGroup | null {
     return this.serviceDays.controls.find(
@@ -167,15 +127,8 @@ export class ConfigPageComponent {
   addTimeSlot(day: string) {
     const times = this.getTimesArray(day);
     if (times) {
-      times.push(
-        this.fb.group(
-          {
-            startTime: [''],
-            endTime: [''],
-          },
-          { validators: validateTimeRange }
-        )
-      );
+      times.push(this.formService.createTimeSlot());
+
     }
   }
 
@@ -208,16 +161,7 @@ export class ConfigPageComponent {
   }
 
   addHoliday() {
-    this.holidays.push(
-      this.fb.group(
-        {
-          date: [''],
-          startTime: [''],
-          endTime: [''],
-        },
-        { validators: validateTimeRange }
-      )
-    );
+    this.holidays.push(this.formService.createHoliday());
   }
 
   removeHoliday(index: number) {
@@ -233,37 +177,33 @@ export class ConfigPageComponent {
   }
 
   applySameScheduleToAll() {
-  const sameSchedule = this.capacityForm.get('sameScheduleAllDays')?.value;
-  const lunesGroup = this.getDayGroup('MON');
-  if (!sameSchedule || !lunesGroup) return;
+    const sameSchedule = this.capacityForm.get('sameScheduleAllDays')?.value;
+    const mondayGroup = this.getDayGroup('MON');
+    if (!sameSchedule || !mondayGroup) return;
 
-  const lunesTimes = this.getTimesArray('MON');
-  if (!lunesTimes || lunesTimes.length === 0) return;
+    const mondayTimes = this.getTimesArray('MON');
+    if (!mondayTimes || mondayTimes.length === 0) return;
 
-  const lunesValues = lunesTimes.controls.map(ctrl => ({
-    startTime: ctrl.get('startTime')?.value,
-    endTime: ctrl.get('endTime')?.value
-  }));
+    const mondayValues = mondayTimes.controls.map((ctrl) => ({
+      startTime: ctrl.get('startTime')?.value,
+      endTime: ctrl.get('endTime')?.value,
+    }));
 
-  this.serviceDays.controls.forEach(dayGroup => {
-    const dayValue = dayGroup.get('day')?.value;
-    if (dayValue !== 'MON') {
-      const targetTimes = dayGroup.get('times') as FormArray;
-      targetTimes.clear(); // limpia antes de copiar
+    this.serviceDays.controls.forEach((dayGroup) => {
+      const dayValue = dayGroup.get('day')?.value;
+      if (dayValue !== 'MON') {
+        const targetTimes = dayGroup.get('times') as FormArray;
+        targetTimes.clear();
 
-      lunesValues.forEach(time =>
-        targetTimes.push(
-          this.fb.group({
-            startTime: [time.startTime],
-            endTime: [time.endTime]
-          }, { validators: validateTimeRange })
-        )
-      );
-    }
-  });
-}
-
-  
+        mondayValues.forEach((time) => {
+          const timeGroup = this.formService.createTimeSlot();
+          timeGroup.patchValue(time); // aquí asignas los valores
+          targetTimes.push(timeGroup);
+        });
+        
+      }
+    });
+  }
 
   submit() {
     console.log(this.capacityForm.value);
