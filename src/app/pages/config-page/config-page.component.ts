@@ -7,19 +7,16 @@ import { MatButtonModule } from '@angular/material/button'; // Si usas botones d
 import { MatIconModule } from '@angular/material/icon'; // Si agregas íconos
 import { MatSelectModule } from '@angular/material/select';
 import { toSignal } from '@angular/core/rxjs-interop';
-import {
-  FormArray,
-  FormControl,
-} from '@angular/forms';
+import { FormArray, FormControl } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { ReservationFormService } from '../../services/reservation-form.service';
-import {
-  FormGroup,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ReservationConfigStaticService } from '../../services/reservation-config-static.service';
+import { ReservationConfigDTO } from '../../models/reservation-config.dto';
+import { ReservationApiService } from '../../services/reservation-api.service';
 @Component({
   selector: 'app-config-page',
   standalone: true,
@@ -43,18 +40,13 @@ import {
   styleUrl: './config-page.component.css',
 })
 export class ConfigPageComponent {
-  weekdays = [
-    { label: 'Monday', value: 'MON' },
-    { label: 'Tuesday', value: 'TUE' },
-    { label: 'Wednesday', value: 'WED' },
-    { label: 'Thursday', value: 'THU' },
-    { label: 'Friday', value: 'FRI' },
-    { label: 'Saturday', value: 'SAT' },
-    { label: 'Sunday', value: 'SUN' },
-  ];
-
   formService = inject(ReservationFormService);
   capacityForm = this.formService.createConfigForm();
+  configService = inject(ReservationConfigStaticService);
+  apiService = inject(ReservationApiService);
+
+  weekdays = this.configService.getWeekdays();
+  frecuencyOptions = this.configService.getFrecuencyOptions();
 
   ngOnInit() {
     this.capacityForm
@@ -69,11 +61,6 @@ export class ConfigPageComponent {
   frecuencySignal = toSignal(this.capacityForm.get('frecuency')!.valueChanges, {
     initialValue: '',
   });
-
-  frecuencyOptions = [
-    { value: 'daily', viewValue: 'Daily' },
-    { value: 'interval', viewValue: 'Interval' },
-  ];
 
   get serviceDays(): FormArray {
     return this.capacityForm.get('serviceDays') as FormArray;
@@ -128,7 +115,6 @@ export class ConfigPageComponent {
     const times = this.getTimesArray(day);
     if (times) {
       times.push(this.formService.createTimeSlot());
-
     }
   }
 
@@ -200,13 +186,19 @@ export class ConfigPageComponent {
           timeGroup.patchValue(time); // aquí asignas los valores
           targetTimes.push(timeGroup);
         });
-        
       }
     });
   }
 
   submit() {
-    console.log(this.capacityForm.value);
-    console.log('form working correctly');
+    if (this.capacityForm.invalid) return;
+  
+    const formData: ReservationConfigDTO = this.capacityForm.value;
+    this.apiService.saveConfig(formData);
+    // this.apiService.saveConfig(formData).subscribe({
+    //   next: () => console.log('Configuration saved successfully ✅'),
+    //   error: (err) => console.error('Error saving configuration ❌', err),
+    // });
   }
+  
 }

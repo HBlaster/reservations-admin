@@ -37,7 +37,7 @@ export class ReservationFormService {
 
   createHoliday(): FormGroup {
     return this.fb.group({
-      date: [''],           // <-- ✅ este es el que faltaba
+      date: [''],           
       startTime: [''],
       endTime: [''],
     }, { validators: this.validator.validateTimeRange });
