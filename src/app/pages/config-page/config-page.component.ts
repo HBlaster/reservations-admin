@@ -15,7 +15,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDividerModule } from '@angular/material/divider';
-import { ReservationFormService } from '../../services/reservation-form.service.ts.service';
+import { ReservationFormService } from '../../services/reservation-form.service';
 import {
   FormGroup,
   ReactiveFormsModule,
