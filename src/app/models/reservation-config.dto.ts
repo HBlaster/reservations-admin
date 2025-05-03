@@ -1,6 +1,6 @@
 export interface ReservationConfigDTO {
     capacity: number;
-    frecuency: 'daily' | 'interval';
+    frequency: 'daily' | 'interval';
     sameScheduleAllDays: boolean;
     serviceDays: {
       day: string; // 'MON', 'TUE', etc.

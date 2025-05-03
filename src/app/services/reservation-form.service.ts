@@ -13,7 +13,7 @@ export class ReservationFormService {
   createConfigForm(): FormGroup {
     return this.fb.group({
       capacity: [0, [Validators.required, Validators.min(1)]],
-      frecuency: ['', [Validators.required]],
+      frequency: ['', [Validators.required]],
       sameScheduleAllDays: [false],
       serviceDays: this.fb.array([]),
       holidays: this.fb.array([]),

@@ -11,10 +11,10 @@
           <!-- Frequency -->
           <mat-form-field appearance="fill">
             <mat-label>Frequency</mat-label>
-            <mat-select formControlName="frecuency" required>
+            <mat-select formControlName="frequency" required>
               <mat-option [value]="null" disabled>Select a frequency</mat-option>
-              <mat-option *ngFor="let frecuency of frecuencyOptions" [value]="frecuency.value">
-                {{ frecuency.viewValue }}
+              <mat-option *ngFor="let frequency of frequencyOptions" [value]="frequency.value">
+                {{ frequency.viewValue }}
               </mat-option>
             </mat-select>
             <mat-error *ngIf="capacityForm.get('frecuency')?.hasError('required')">

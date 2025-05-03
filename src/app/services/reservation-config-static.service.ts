@@ -14,7 +14,7 @@ export class ReservationConfigStaticService {
     ];
   }
 
-  getFrecuencyOptions() {
+  getFrequencyOptions() {
     return [
       { value: 'daily', viewValue: 'Daily' },
       { value: 'interval', viewValue: 'Interval' },

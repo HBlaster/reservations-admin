@@ -46,7 +46,7 @@ export class ConfigPageComponent {
   apiService = inject(ReservationApiService);
 
   weekdays = this.configService.getWeekdays();
-  frecuencyOptions = this.configService.getFrecuencyOptions();
+  frequencyOptions = this.configService.getFrequencyOptions();
 
   ngOnInit() {
     this.capacityForm
@@ -58,7 +58,7 @@ export class ConfigPageComponent {
       });
   }
 
-  frecuencySignal = toSignal(this.capacityForm.get('frecuency')!.valueChanges, {
+  frecuencySignal = toSignal(this.capacityForm.get('frequency')!.valueChanges, {
     initialValue: '',
   });
 
@@ -194,11 +194,11 @@ export class ConfigPageComponent {
     if (this.capacityForm.invalid) return;
   
     const formData: ReservationConfigDTO = this.capacityForm.value;
-    this.apiService.saveConfig(formData);
-    // this.apiService.saveConfig(formData).subscribe({
-    //   next: () => console.log('Configuration saved successfully ✅'),
-    //   error: (err) => console.error('Error saving configuration ❌', err),
-    // });
+    // this.apiService.saveConfig(formData);
+    this.apiService.saveConfig(formData).subscribe({
+      next: () => console.log('Configuration saved successfully ✅'),
+      error: (err) => console.error('Error saving configuration ❌', err),
+    });
   }
   
 }
