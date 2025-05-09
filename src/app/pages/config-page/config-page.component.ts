@@ -17,6 +17,12 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ReservationConfigStaticService } from '../../services/reservation-config-static.service';
 import { ReservationConfigDTO } from '../../models/reservation-config.dto';
 import { ReservationApiService } from '../../services/reservation-api.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import Swal from 'sweetalert2';
+
+
+
 @Component({
   selector: 'app-config-page',
   standalone: true,
@@ -34,12 +40,14 @@ import { ReservationApiService } from '../../services/reservation-api.service';
     MatDatepickerModule,
     MatNativeDateModule,
     MatDividerModule,
+    MatSnackBarModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './config-page.component.html',
   styleUrl: './config-page.component.css',
 })
 export class ConfigPageComponent {
+  snackBar = inject(MatSnackBar);
   formService = inject(ReservationFormService);
   capacityForm = this.formService.createConfigForm();
   configService = inject(ReservationConfigStaticService);
@@ -194,11 +202,32 @@ export class ConfigPageComponent {
     if (this.capacityForm.invalid) return;
   
     const formData: ReservationConfigDTO = this.capacityForm.value;
-    // this.apiService.saveConfig(formData);
+  
     this.apiService.saveConfig(formData).subscribe({
-      next: () => console.log('Configuration saved successfully ✅'),
-      error: (err) => console.error('Error saving configuration ❌', err),
+      next: () => {
+        Swal.fire({
+          icon: 'success',
+          title: '¡Configuración guardada!',
+          text: 'Se ha guardado y generado el calendario de 30 días.',
+          confirmButtonText: 'Aceptar'
+        }).then(() => {
+          // Limpia el formulario después de confirmar
+          this.capacityForm.reset();
+          this.capacityForm = this.formService.createConfigForm();
+        });
+      },
+      error: (err) => {
+        console.error('Error saving configuration ❌', err);
+        Swal.fire({
+          icon: 'error',
+          title: '¡Error!',
+          text: 'Ocurrió un error al guardar la configuración.',
+          confirmButtonText: 'Cerrar'
+        });
+      }
     });
   }
+  
+  
   
 }
