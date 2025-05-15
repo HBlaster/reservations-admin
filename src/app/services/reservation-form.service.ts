@@ -10,14 +10,23 @@ export class ReservationFormService {
   ) {}
   
 
-  createConfigForm(): FormGroup {
-    return this.fb.group({
+  createConfigForm(frequency:string): FormGroup {
+    if(frequency === 'daily'){
+      return this.fb.group({
       capacity: [0, [Validators.required, Validators.min(1)]],
-      frequency: ['', [Validators.required]],
       sameScheduleAllDays: [false],
       serviceDays: this.fb.array([]),
       holidays: this.fb.array([]),
     });
+    }
+    return this.fb.group({
+      appointmentDuration: [0, [Validators.required, Validators.min(1)]],
+      breakTime: [0, [Validators.required, Validators.min(1)]],
+      sameScheduleAllDays: [false],
+      serviceDays: this.fb.array([]),
+      holidays: this.fb.array([]),
+    });
+    
   }
 
   createTimeSlot(): FormGroup {

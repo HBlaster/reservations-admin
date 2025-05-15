@@ -3,25 +3,29 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button'; // Si usas botones después
-import { MatIconModule } from '@angular/material/icon'; // Si agregas íconos
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { FormArray, FormControl } from '@angular/forms';
+import {
+  FormArray,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { ReservationFormService } from '../../services/reservation-form.service';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ReservationConfigStaticService } from '../../services/reservation-config-static.service';
-import { ReservationConfigDTO } from '../../models/reservation-config.dto';
+import {
+  ReservationConfigDailyDTO,
+  ReservationConfigIntervalDTO,
+} from '../../models/reservation-config.dto';
 import { ReservationApiService } from '../../services/reservation-api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import Swal from 'sweetalert2';
-
-
 
 @Component({
   selector: 'app-config-page',
@@ -33,7 +37,6 @@ import Swal from 'sweetalert2';
     ReactiveFormsModule,
     MatButtonModule,
     MatIconModule,
-    ReactiveFormsModule,
     CommonModule,
     MatSelectModule,
     MatCheckboxModule,
@@ -49,38 +52,40 @@ import Swal from 'sweetalert2';
 export class ConfigPageComponent {
   snackBar = inject(MatSnackBar);
   formService = inject(ReservationFormService);
-  capacityForm = this.formService.createConfigForm();
-  configService = inject(ReservationConfigStaticService);
   apiService = inject(ReservationApiService);
+  configService = inject(ReservationConfigStaticService);
+
+  capacityForm: FormGroup | null = null;
+  selectedFrequency: '' | 'daily' | 'interval' = '';
 
   weekdays = this.configService.getWeekdays();
   frequencyOptions = this.configService.getFrequencyOptions();
 
-  ngOnInit() {
+  ngOnInit() {}
+
+  onFrequencyChange(frequency: '' | 'daily' | 'interval') {
+    this.selectedFrequency = frequency;
+    this.capacityForm = this.formService.createConfigForm(frequency);
+
     this.capacityForm
       .get('sameScheduleAllDays')
       ?.valueChanges.subscribe((value) => {
-        if (value) {
-          this.applySameScheduleToAll();
-        }
+        if (value) this.applySameScheduleToAll();
       });
   }
 
-  frecuencySignal = toSignal(this.capacityForm.get('frequency')!.valueChanges, {
-    initialValue: '',
-  });
-
   get serviceDays(): FormArray {
-    return this.capacityForm.get('serviceDays') as FormArray;
+    return this.capacityForm?.get('serviceDays') as FormArray;
   }
 
   toggleDay(day: string, checked: boolean) {
+    if (!this.capacityForm) return;
+
     if (checked) {
       const dayGroup = this.formService.createServiceDay(day);
       this.serviceDays.push(dayGroup);
 
-      // 🚀 If same schedule is active, apply it immediately
-      const sameSchedule = this.capacityForm.get('sameScheduleAllDays')?.value;
+      const sameSchedule = this.capacityForm?.get('sameScheduleAllDays')?.value;
       if (sameSchedule && day !== 'MON') {
         this.applySameScheduleToAll();
       }
@@ -88,7 +93,7 @@ export class ConfigPageComponent {
       if (day === 'MON') {
         const times = dayGroup.get('times') as FormArray;
         times.valueChanges.subscribe(() => {
-          const sameSchedule = this.capacityForm.get(
+          const sameSchedule = this.capacityForm?.get(
             'sameScheduleAllDays'
           )?.value;
           if (sameSchedule) this.applySameScheduleToAll();
@@ -151,7 +156,7 @@ export class ConfigPageComponent {
   }
 
   get holidays(): FormArray {
-    return this.capacityForm.get('holidays') as FormArray;
+    return this.capacityForm?.get('holidays') as FormArray;
   }
 
   addHoliday() {
@@ -171,6 +176,8 @@ export class ConfigPageComponent {
   }
 
   applySameScheduleToAll() {
+    if (!this.capacityForm) return;
+
     const sameSchedule = this.capacityForm.get('sameScheduleAllDays')?.value;
     const mondayGroup = this.getDayGroup('MON');
     if (!sameSchedule || !mondayGroup) return;
@@ -191,7 +198,7 @@ export class ConfigPageComponent {
 
         mondayValues.forEach((time) => {
           const timeGroup = this.formService.createTimeSlot();
-          timeGroup.patchValue(time); // aquí asignas los valores
+          timeGroup.patchValue(time);
           targetTimes.push(timeGroup);
         });
       }
@@ -199,35 +206,60 @@ export class ConfigPageComponent {
   }
 
   submit() {
-    if (this.capacityForm.invalid) return;
-  
-    const formData: ReservationConfigDTO = this.capacityForm.value;
-  
-    this.apiService.saveConfig(formData).subscribe({
-      next: () => {
-        Swal.fire({
-          icon: 'success',
-          title: '¡Configuración guardada!',
-          text: 'Se ha guardado y generado el calendario de 30 días.',
-          confirmButtonText: 'Aceptar'
-        }).then(() => {
-          // Limpia el formulario después de confirmar
-          this.capacityForm.reset();
-          this.capacityForm = this.formService.createConfigForm();
-        });
-      },
-      error: (err) => {
-        console.error('Error saving configuration ❌', err);
-        Swal.fire({
-          icon: 'error',
-          title: '¡Error!',
-          text: 'Ocurrió un error al guardar la configuración.',
-          confirmButtonText: 'Cerrar'
-        });
-      }
-    });
+    if (!this.capacityForm || this.capacityForm.invalid) return;
+
+    if (this.selectedFrequency === 'interval') {
+      const formData: ReservationConfigIntervalDTO = {
+        ...this.capacityForm.value,
+        frequency: this.selectedFrequency,
+      };
+
+      this.apiService.saveIntervalConfig(formData).subscribe({
+        next: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Guardado',
+            text: 'Reservaciones configuradas.',
+          });
+          this.capacityForm = null;
+          this.selectedFrequency = '';
+        },
+        error: (err) => {
+          console.error(err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo guardar la config.',
+          });
+        },
+      });
+      
+      console.log(formData);
+    } else if (this.selectedFrequency === 'daily') {
+      const formData: ReservationConfigDailyDTO = {
+        ...this.capacityForm.value,
+        frequency: this.selectedFrequency,
+      };
+
+      this.apiService.saveDailyConfig(formData).subscribe({
+        next: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Guardado',
+            text: 'Reservaciones configuradas.',
+          });
+          this.capacityForm = null;
+          this.selectedFrequency = '';
+        },
+        error: (err) => {
+          console.error(err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo guardar la config.',
+          });
+        },
+      });
+    }
   }
-  
-  
-  
 }

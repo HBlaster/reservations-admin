@@ -11,12 +11,21 @@ export class ReservationApiService {
   
 
   constructor(private http: HttpClient) {}
-  saveConfig(config: any) {
+
+  saveDailyConfig(config: any) {
     const token = localStorage.getItem('access_token') || '';
     const headers = {
       Authorization: `Bearer ${token}`
     };
     return this.http.post(`${this.apiUrl}config-reservation`, config, {headers} );
+  }
+
+  saveIntervalConfig(config: any) {
+    const token = localStorage.getItem('access_token') || '';
+    const headers = {
+      Authorization: `Bearer ${token}`
+    };
+    return this.http.post(`${this.apiUrl}config-reservation/intervals-config`, config, {headers} );
   }
 
 }
