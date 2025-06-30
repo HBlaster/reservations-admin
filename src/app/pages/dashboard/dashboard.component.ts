@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import {ReservationApiService} from '../../services/reservation-api.service'; // Import the service if needed
+import { ReservationApiService } from '../../services/reservation-api.service'; // Import the service if needed
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
@@ -10,10 +10,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   standalone: true,
   imports: [MatCardModule, MatProgressSpinnerModule, CommonModule],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css'
+  styleUrl: './dashboard.component.css',
 })
 export class DashboardComponent {
-
   constructor(private reservationApiService: ReservationApiService) {
     // Initialization code can go here
   }
@@ -36,14 +35,16 @@ export class DashboardComponent {
         this.config.frequency = null;
         this.config.holidays = [];
         this.config.serviceDays = [];
-        console.log('No configuration found, using default frequency:', this.config.frequency);
+        console.log(
+          'No configuration found, using default frequency:',
+          this.config.frequency
+        );
       },
       complete: () => {
         console.log('Configuration loading complete');
         this.loading = false; // Set loading to false when complete
-      }
+      },
     });
     console.log('Dashboard component initialized');
   }
-
 }
