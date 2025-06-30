@@ -28,4 +28,9 @@ export class ReservationApiService {
     return this.http.post(`${this.apiUrl}config-reservation/intervals-config`, config, {headers} );
   }
 
+  getReservationConfig(){
+    const url = `${environment.apiUrl}config-reservation/active-config`;
+    return this.http.get(url);
+  }
+
 }
