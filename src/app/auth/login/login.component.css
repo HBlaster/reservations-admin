@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f3f4f6;
+  background: #6d6d6d;
 }
 
 .login-container {
@@ -14,7 +14,7 @@
 }
 
 .login-logo {
-  height: 80px;
+  height: 250px;
   object-fit: contain;
 }
 

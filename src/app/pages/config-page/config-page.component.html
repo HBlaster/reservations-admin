@@ -22,9 +22,13 @@
           </mat-select>
         </mat-form-field>
 
-        <form *ngIf="capacityForm" [formGroup]="capacityForm" (ngSubmit)="submit()">
+        <form
+          *ngIf="capacityForm"
+          [formGroup]="capacityForm"
+          (ngSubmit)="submit()"
+        >
           <!-- Daily configuration -->
-           <div *ngIf="selectedFrequency === 'daily'">
+          <div *ngIf="selectedFrequency === 'daily'">
             <!-- Capacity -->
             <mat-form-field appearance="fill">
               <mat-label>Capacity</mat-label>
@@ -188,7 +192,9 @@
                 required
               />
               <mat-error
-                *ngIf="capacityForm.get('appointmentDuration')?.hasError('required')"
+                *ngIf="
+                  capacityForm.get('appointmentDuration')?.hasError('required')
+                "
               >
                 Capacity is required.
               </mat-error>
@@ -347,12 +353,7 @@
           </div>
 
           <!-- Submit button -->
-          <button
-            mat-raised-button
-            color="primary"
-            type="submit"
-            
-          >
+          <button mat-raised-button class="dark-submit" type="submit">
             Submit
           </button>
         </form>
