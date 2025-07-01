@@ -18,10 +18,8 @@
           </span>
         </p>
       </div>
-      <div *ngIf="config.frequency == null">
-        <p>Frecuencia: No definida</p>
-        <p>Dias de Servicio: No definidos</p>
-        <p>Dias Festivos: No definidos</p>
+      <div *ngIf="config.frequency === null">
+        <p>Configuracion no definida</p>
       </div>
     </div>
   </mat-card-content>
