@@ -4,9 +4,10 @@
     <div *ngIf="loading">
       <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
     </div>
-    <div *ngIf="!loading">
+    <div *ngIf="!loading" style="margin: 20px;">
       <div *ngIf="config.frequency != null">
         <p>Frecuencia: {{ config.frequency }}</p>
+        <p *ngIf="config.frequency === 'daily'">Capacidad por dia: {{ config.capacity }} personas</p>
         <p>
           Dias de Servicio:
           <span *ngFor="let day of config.serviceDays">{{ day.day }}, </span>
@@ -30,10 +31,10 @@
   <mat-card-content>
     <mat-card-title>Reservaciones</mat-card-title>
     <div *ngIf="config.frequency === 'daily'">
-      <app-reservations-daily></app-reservations-daily>
+      <app-reservations-daily ></app-reservations-daily>
     </div>
     <div *ngIf="config.frequency === 'intervals'">
-      <app-reservations-intervals></app-reservations-intervals>
+      <app-reservations-intervals ></app-reservations-intervals>
     </div>
   </mat-card-content>
 </mat-card>

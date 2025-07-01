@@ -33,4 +33,10 @@ export class ReservationApiService {
     return this.http.get(url);
   }
 
+  getDailyReservationsConfirmed(date: Date) {
+    const formattedDate = date.toISOString().split('T')[0];
+    const url = `${environment.apiUrl}config-reservation/daily-confirmed?date=${formattedDate}`;
+    return this.http.get(url);
+  }
+
 }
