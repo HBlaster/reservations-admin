@@ -5,10 +5,21 @@ import { ReservationApiService } from '../../services/reservation-api.service'; 
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
+
+
+import { ReservationsDailyComponent } from '../../components/reservations-daily/reservations-daily.component';
+import { ReservationsIntervalsComponent } from '../../components/reservations-intervals/reservations-intervals.component';
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [MatCardModule, MatProgressSpinnerModule, CommonModule],
+  imports: [
+    MatCardModule,
+    MatProgressSpinnerModule,
+    CommonModule,
+    ReservationsDailyComponent,
+    ReservationsIntervalsComponent
+],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
