@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {
@@ -12,6 +13,7 @@ import { ReservationApiService } from '../../services/reservation-api.service';
   selector: 'app-reservations-daily',
   standalone: true,
   imports: [
+    CommonModule,
     MatFormFieldModule,
     MatInputModule,
     MatDatepickerModule,
@@ -21,6 +23,9 @@ import { ReservationApiService } from '../../services/reservation-api.service';
   styleUrl: './reservations-daily.component.css',
 })
 export class ReservationsDailyComponent {
+
+  reservacionesConfirmadas: number | null = null;
+
   constructor(private reservationApi: ReservationApiService) {}
 
   onDateChange(event: MatDatepickerInputEvent<Date>) {
@@ -28,8 +33,9 @@ export class ReservationsDailyComponent {
       const date = event.value;
 
       this.reservationApi.getDailyReservationsConfirmed(date).subscribe(
-        (data) => {
+        (data: any) => {
           console.log('Reservas diarias confirmadas:', data);
+          this.reservacionesConfirmadas = data;
         },
         (error) => {
           console.error(

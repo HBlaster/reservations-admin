@@ -30,10 +30,10 @@
 <mat-card appearance="outlined" *ngIf="!loading && config.frequency !== null">
   <mat-card-content>
     <mat-card-title>Reservaciones</mat-card-title>
-    <div *ngIf="config.frequency === 'daily'">
+    <div *ngIf="config.frequency === 'daily'" style="margin: 20px;">
       <app-reservations-daily ></app-reservations-daily>
     </div>
-    <div *ngIf="config.frequency === 'intervals'">
+    <div *ngIf="config.frequency === 'interval'" style="margin: 20px;">
       <app-reservations-intervals ></app-reservations-intervals>
     </div>
   </mat-card-content>
