@@ -43,7 +43,7 @@ export class ReservationApiService {
 
   getAvailabilityIntervalByDate(date: Date, type: string = 'interval') {
     const formattedDate = new Date(date).toISOString().split('T')[0];
-    const url = `${environment.apiUrl}config-reservation/availability/${formattedDate}?type=${type}`;
+    const url = `${environment.apiUrl}config-reservation/availability/${formattedDate}?type=${type}&admin=true`;
     return this.http.get(url);
   }
 }

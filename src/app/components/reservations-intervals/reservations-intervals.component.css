@@ -1,0 +1,38 @@
+::ng-deep table {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+::ng-deep th.mat-mdc-header-cell {
+  background-color: #e6e8eb; /* gris frío */
+  color: #333;
+  font-weight: 600;
+}
+
+::ng-deep td.mat-mdc-cell {
+  background-color: #f8f9fa; /* gris muy claro */
+  color: #444;
+}
+
+::ng-deep tr.mat-mdc-row:nth-child(even) td.mat-mdc-cell {
+  background-color: #eceff1; /* otro tono gris frío para filas pares */
+}
+
+::ng-deep tr.mat-mdc-row:hover td.mat-mdc-cell {
+  background-color: #d0d7de; /* gris azulado suave al hover */
+}
+
+::ng-deep .mat-mdc-header-cell,
+::ng-deep .mat-mdc-cell {
+  padding: 12px;
+  font-size: 14px;
+}
+
+/* Resaltado para reserved en azul frío */
+::ng-deep td.mat-mdc-cell.reserved {
+  background-color: #cce4f6; /* azul muy suave */
+  font-weight: 500;
+  color: #222;
+}
