@@ -205,61 +205,131 @@ export class ConfigPageComponent {
     });
   }
 
-  submit() {
-    if (!this.capacityForm || this.capacityForm.invalid) return;
+  // submit() {
+  //   if (!this.capacityForm || this.capacityForm.invalid) return;
 
-    if (this.selectedFrequency === 'interval') {
-      const formData: ReservationConfigIntervalDTO = {
-        ...this.capacityForm.value,
-        frequency: this.selectedFrequency,
-      };
+  //   if (this.selectedFrequency === 'interval') {
+  //     const formData: ReservationConfigIntervalDTO = {
+  //       ...this.capacityForm.value,
+  //       frequency: this.selectedFrequency,
+  //     };
 
-      this.apiService.saveIntervalConfig(formData).subscribe({
-        next: () => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Guardado',
-            text: 'Reservaciones configuradas.',
-          });
-          this.capacityForm = null;
-          this.selectedFrequency = '';
-        },
-        error: (err) => {
-          console.error(err);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'No se pudo guardar la config.',
-          });
-        },
-      });
+  //     this.apiService.saveIntervalConfig(formData).subscribe({
+  //       next: () => {
+  //         Swal.fire({
+  //           icon: 'success',
+  //           title: 'Guardado',
+  //           text: 'Reservaciones configuradas.',
+  //         });
+  //         this.capacityForm = null;
+  //         this.selectedFrequency = '';
+  //       },
+  //       error: (err) => {
+  //         console.error(err);
+  //         Swal.fire({
+  //           icon: 'error',
+  //           title: 'Error',
+  //           text: 'No se pudo guardar la config.',
+  //         });
+  //       },
+  //     });
       
-      console.log(formData);
-    } else if (this.selectedFrequency === 'daily') {
-      const formData: ReservationConfigDailyDTO = {
-        ...this.capacityForm.value,
-        frequency: this.selectedFrequency,
-      };
+  //     console.log(formData);
+  //   } else if (this.selectedFrequency === 'daily') {
+  //     const formData: ReservationConfigDailyDTO = {
+  //       ...this.capacityForm.value,
+  //       frequency: this.selectedFrequency,
+  //     };
 
-      this.apiService.saveDailyConfig(formData).subscribe({
-        next: () => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Guardado',
-            text: 'Reservaciones configuradas.',
-          });
-          this.capacityForm = null;
-          this.selectedFrequency = '';
-        },
-        error: (err) => {
-          console.error(err);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'No se pudo guardar la config.',
-          });
-        },
-      });
+  //     this.apiService.saveDailyConfig(formData).subscribe({
+  //       next: () => {
+  //         Swal.fire({
+  //           icon: 'success',
+  //           title: 'Guardado',
+  //           text: 'Reservaciones configuradas.',
+  //         });
+  //         this.capacityForm = null;
+  //         this.selectedFrequency = '';
+  //       },
+  //       error: (err) => {
+  //         console.error(err);
+  //         Swal.fire({
+  //           icon: 'error',
+  //           title: 'Error',
+  //           text: 'No se pudo guardar la config.',
+  //         });
+  //       },
+  //     });
+  //   }
+  // }
+  submit() {
+  if (!this.capacityForm || this.capacityForm.invalid) return;
+
+  Swal.fire({
+    title: '¿Guardar configuración?',
+    text: 'Confirma que deseas guardar esta configuración.',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Guardar',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // ✅ Si confirma, continua con el guardado
+      if (this.selectedFrequency === 'interval') {
+        const formData: ReservationConfigIntervalDTO = {
+          ...this.capacityForm?.value,
+          frequency: this.selectedFrequency,
+        };
+
+        this.apiService.saveIntervalConfig(formData).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Guardado',
+              text: 'Reservaciones configuradas.',
+            });
+            this.capacityForm?.reset();
+            this.selectedFrequency = '';
+          },
+          error: (err) => {
+            console.error(err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo guardar la config.',
+            });
+          },
+        });
+        console.log(formData);
+      } else if (this.selectedFrequency === 'daily') {
+        const formData: ReservationConfigDailyDTO = {
+          ...this.capacityForm?.value,
+          frequency: this.selectedFrequency,
+        };
+
+        this.apiService.saveDailyConfig(formData).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Guardado',
+              text: 'Reservaciones configuradas.',
+            });
+            this.capacityForm?.reset();
+            this.selectedFrequency = '';
+          },
+          error: (err) => {
+            console.error(err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo guardar la config.',
+            });
+          },
+        });
+      }
     }
-  }
+    // ✅ Si cancela, no hace nada
+  });
+}
+
 }
