@@ -26,6 +26,7 @@ import { ReservationApiService } from '../../services/reservation-api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import Swal from 'sweetalert2';
+import { CurrentConfigComponent } from "../../components/current-config/current-config.component";
 
 @Component({
   selector: 'app-config-page',
@@ -44,7 +45,8 @@ import Swal from 'sweetalert2';
     MatNativeDateModule,
     MatDividerModule,
     MatSnackBarModule,
-  ],
+    CurrentConfigComponent
+],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './config-page.component.html',
   styleUrl: './config-page.component.css',
@@ -328,7 +330,6 @@ export class ConfigPageComponent {
         });
       }
     }
-    // ✅ Si cancela, no hace nada
   });
 }
 

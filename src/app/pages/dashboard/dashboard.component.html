@@ -1,31 +1,3 @@
-<mat-card appearance="outlined">
-  <mat-card-content>
-    <mat-card-title>Configuracion Actual</mat-card-title>
-    <div *ngIf="loading">
-      <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
-    </div>
-    <div *ngIf="!loading" style="margin: 20px;">
-      <div *ngIf="config.frequency != null">
-        <p>Frecuencia: {{ config.frequency }}</p>
-        <p *ngIf="config.frequency === 'daily'">Capacidad por dia: {{ config.capacity }} personas</p>
-        <p>
-          Dias de Servicio:
-          <span *ngFor="let day of config.serviceDays">{{ day.day }}, </span>
-        </p>
-        <p>
-          Dias Festivos:
-          <span *ngFor="let holiday of config.holidays"
-            >{{ holiday.date }}
-          </span>
-        </p>
-      </div>
-      <div *ngIf="config.frequency === null">
-        <p>Configuracion no definida</p>
-      </div>
-    </div>
-  </mat-card-content>
-</mat-card>
-
 <!-- Reservaciones -->
 <mat-card appearance="outlined" *ngIf="!loading && config.frequency !== null" style="margin-top: 20px;">
   <mat-card-content>
